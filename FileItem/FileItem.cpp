@@ -54,6 +54,16 @@ std::string FileItem::getAccessStr(__mode_t mode) {
         ret.append(1,'l');
     else if (S_ISDIR(mode))
         ret.append(1,'d');
+    else if (S_ISBLK(mode))
+        ret.append(1,'b');
+    else if (S_ISCHR(mode))
+        ret.append(1,'c');
+    else if (S_ISFIFO(mode))
+        ret.append(1,'p');
+    else if (S_ISREG(mode))
+        ret.append(1,'r');
+    else if (S_ISSOCK(mode))
+        ret.append(1,'s');
     else
         ret.append(1,'-');
 

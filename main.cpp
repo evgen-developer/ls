@@ -20,10 +20,10 @@ int main(int argc, char *argv[]) {
     const auto &processingDirEntries = ProcessingFileEntriesCreator::create(inputParams.flags);
 
     // Processing files
-    if (!inputParams.pathFile.empty()) {
+    if (!inputParams.files.empty()) {
         std::cout << std::endl;
 
-        for (const auto &item: inputParams.pathFile)
+        for (const auto &item: inputParams.files)
             processingDirEntries->process(item.second.get(), item.first);
 
         // Push data to stdout
@@ -36,10 +36,10 @@ int main(int argc, char *argv[]) {
         std::cout << std::endl;
     }
 
-    for (const auto &pathItem: inputParams.pathDir) {
+    for (const auto &pathItem: inputParams.dirs) {
 
         // Output fileName
-        if (inputParams.pathDir.size() > 1 || !inputParams.pathFile.empty())
+        if (inputParams.dirs.size() > 1 || !inputParams.files.empty())
             std::cout << pathItem << ": " << std::endl;
 
         // Open directory

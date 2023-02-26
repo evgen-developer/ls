@@ -41,16 +41,17 @@ Parameters::Input& Parameters::parse(int argc, char **argv) {
 
             std::shared_ptr<struct stat> stPtr(st);
             if (S_ISDIR(st->st_mode))
-                input.pathDir.push_back(argv[i]);
+                input.dirs.push_back(argv[i]);
             else {
-                input.pathFile.emplace_back(argv[i], stPtr);
+                // Let's save the stat so as not to request twice
+                input.files.emplace_back(argv[i], stPtr);
             }
         }
     }
 
     // If directory/files are not specified, use the current one
-    if (input.pathDir.empty() && input.pathFile.empty())
-        input.pathDir.push_back("./");
+    if (input.dirs.empty() && input.files.empty())
+        input.dirs.push_back("./");
 
     return input;
 }

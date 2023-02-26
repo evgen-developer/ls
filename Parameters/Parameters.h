@@ -15,8 +15,8 @@ public:
 
     struct Input {
         uint8_t flags;
-        std::list<const char*> pathDir;
-        std::list<PairFile> pathFile;
+        std::list<const char*> dirs;
+        std::list<PairFile> files;
     };
 
 private:
