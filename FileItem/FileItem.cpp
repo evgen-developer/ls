@@ -3,14 +3,14 @@
 #include <array>
 #include <iostream>
 #include <ctime>
-
-#include <sys/stat.h>
-#include <sys/dir.h>
-#include <pwd.h>
-#include <grp.h>
 #include <csignal>
 #include <cstring>
 
+#include <sys/stat.h>
+#include <sys/dir.h>
+#include <sys/vfs.h>
+#include <pwd.h>
+#include <grp.h>
 
 const std::string &FileItem::getAccess() const {
     return access;
@@ -60,11 +60,9 @@ std::string FileItem::getAccessStr(__mode_t mode) {
         ret.append(1,'c');
     else if (S_ISFIFO(mode))
         ret.append(1,'p');
-    else if (S_ISREG(mode))
-        ret.append(1,'r');
     else if (S_ISSOCK(mode))
         ret.append(1,'s');
-    else
+    else // is reg
         ret.append(1,'-');
 
     for (const auto& item : accessMap) {
@@ -87,25 +85,23 @@ void FileItem::fillDateTime(__time_t mtime) {
     // Create a copy on the stack, because this is a pointer to an internal static buffer
     struct tm mtimeTm;
     memcpy(&mtimeTm, tmp, sizeof(mtimeTm));
-
+    char buff[6];
 
     // Fill monthBuff
-    char monthBuff[4];
-    monthBuff[3] = '\0';
-    if (strftime(monthBuff, sizeof(monthBuff), "%b", &mtimeTm) == 0) {
+    buff[3] = '\0';
+    if (strftime(buff, sizeof(buff), "%b", &mtimeTm) == 0) {
         std::cerr << "strftime return 0" << std::endl;
         exit(EXIT_FAILURE);
     }
-    dateColumn1 = monthBuff;
+    dateColumn1 = buff;
 
     // Fill dayBuff
-    char dayBuff[3];
-    dayBuff[2] = '\0';
-    if (strftime(dayBuff, sizeof(dayBuff), "%e", &mtimeTm) == 0) {
+    buff[2] = '\0';
+    if (strftime(buff, sizeof(buff), "%e", &mtimeTm) == 0) {
         std::cerr << "strftime return 0" << std::endl;
         exit(EXIT_FAILURE);
     }
-    dateColumn2 = dayBuff;
+    dateColumn2 = buff;
 
     // Fill time or year
     auto currentTime = std::time(nullptr);
@@ -116,13 +112,12 @@ void FileItem::fillDateTime(__time_t mtime) {
         dateColumn3 = std::to_string(mtimeTm.tm_year + 1900);
     } else {
         // Time
-        char timeBuff[6];
-        timeBuff[5] = '\0';
-        if (strftime(timeBuff, sizeof(timeBuff), "%H:%M", &mtimeTm) == 0) {
+        buff[5] = '\0';
+        if (strftime(buff, sizeof(buff), "%H:%M", &mtimeTm) == 0) {
             std::cerr << "strftime return 0" << std::endl;
             exit(EXIT_FAILURE);
         }
-        dateColumn3 = timeBuff;
+        dateColumn3 = buff;
     }
 
 }
@@ -164,11 +159,20 @@ FileItem::FileItem(struct stat *st, const char *fileName, const char *fullPath, 
         }
     }
 
+    if (S_ISBLK(st->st_mode) || S_ISCHR(st->st_mode)) {
+        uint8_t major = st->st_rdev>>8;
+        uint8_t minor = st->st_rdev;
+        this->sizeStr
+        .append(std::to_string(major))
+        .append(", ")
+        .append(std::to_string(minor));
+    } else
+        this->sizeStr = funcSz(st->st_size);
+
     this->fileName = fileName;
     this->access = getAccessStr(st->st_mode);
     this->userName = getUsername(st->st_uid);
     this->groupName = getGroupname(st->st_gid);
-    this->sizeStr = funcSz(st->st_size);
     this->hardLinkCount = st->st_nlink;
     fillDateTime(st->st_mtime);
 }

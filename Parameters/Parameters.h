@@ -7,14 +7,13 @@
 
 #include <sys/stat.h>
 
-
 class Parameters {
 
 public:
     using PairFile = std::pair<const char*, std::shared_ptr<struct stat>>;
 
     struct Input {
-        uint8_t flags;
+        uint8_t flags = noFlags;
         std::list<const char*> dirs;
         std::list<PairFile> files;
     };
@@ -22,6 +21,8 @@ public:
 private:
     Parameters();
     Input input;
+
+    static void printUsage();
 
 public:
     static constexpr uint8_t noFlags = 0;

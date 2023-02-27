@@ -24,12 +24,16 @@ namespace Auxiliary {
                         'T',
                         'P',
                         'E',
+                        'Z',
+                        'Y',
+                        'R',
+                        'Q'
                 };
 
-        static constexpr uint64_t multiplier = 1024ul;
+        static constexpr uint64_t divider = 1024ul;
         static constexpr int unitsArrMaxIdx = (sizeof(unitsOfInformation) / sizeof(unitsOfInformation[0])) - 1;
 
-        if (sz < multiplier)
+        if (sz < divider)
             return getSizeDefaultFormat(sz);
 
         std::string ret;
@@ -39,24 +43,13 @@ namespace Auxiliary {
         long double value = sz;
         uint64_t intValue = sz;
 
-        while (intValue >= multiplier && arrIdx < unitsArrMaxIdx) {
-            value /= (long double)multiplier;
-            intValue /= multiplier;
+        while (intValue >= divider && arrIdx < unitsArrMaxIdx) {
+            value /= (long double)divider;
+            intValue /= divider;
             ++arrIdx;
         }
 
-        long double rem = value - intValue;
-        if (intValue > 10 && rem > 0.0) {
-            if (rem > 0.0)
-                ++intValue;
-            ret.append(std::to_string(intValue));
-        } else {
-            int n = 0;
-            if (arrIdx == 0 || rem > 0.1) // KiB
-                n = 1;
-            ret = doubleToString(value, n);
-        }
-
+        ret = doubleToString(value, 1);
         if (arrIdx != -1)
             ret.append(1, unitsOfInformation[arrIdx]);
 

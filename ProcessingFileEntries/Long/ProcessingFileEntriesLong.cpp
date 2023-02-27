@@ -73,10 +73,10 @@ void ProcessingFileEntriesLong::push() {
                 << item->getHardLinkCount()
                 << " "
                 << std::setw(identsInColumns.groupname)
-                << item->getGroupName()
+                << item->getUserName()
                 << " "
                 << std::setw(identsInColumns.username)
-                << item->getUserName()
+                << item->getGroupName()
                 << " "
                 << std::setw(identsInColumns.size)
                 << item->getSizeStr()

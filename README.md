@@ -8,7 +8,7 @@ In the source code directory run:
 
 cmake -S .
 
-cmake --build
+cmake --build .
 
 # Requirements and restrictions
 
@@ -21,6 +21,20 @@ Compiler with support for C++11 or above.
 -h: prefix each file size with a size letter, such as M for binary megabytes (`mebibyte').
 
 -r: sort the contents of a directory in reverse order.
+
+--help: display this help and exit.
+
+# Usages example
+
+Simply output: ls
+
+Long format: ls -l /dir 
+
+Long format output for two directories: ls /dir /dir2 -l
+
+Long format output and human-readable format for current dir(./): ls -l -h
+
+Long format output for directories and file, descending order and human-readable: ls -lh /file1.bin /dir ./ -r
 
 # LICENSE
 
