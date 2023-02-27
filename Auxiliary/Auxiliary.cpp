@@ -39,13 +39,10 @@ namespace Auxiliary {
         std::string ret;
 
         int arrIdx = -1;
-
         long double value = sz;
-        uint64_t intValue = sz;
 
-        while (intValue >= divider && arrIdx < unitsArrMaxIdx) {
+        while (value >= divider && arrIdx < unitsArrMaxIdx) {
             value /= (long double)divider;
-            intValue /= divider;
             ++arrIdx;
         }
 
