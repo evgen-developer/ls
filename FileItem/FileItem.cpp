@@ -8,7 +8,6 @@
 
 #include <sys/stat.h>
 #include <sys/dir.h>
-#include <sys/vfs.h>
 #include <pwd.h>
 #include <grp.h>
 
