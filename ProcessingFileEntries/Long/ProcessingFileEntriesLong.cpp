@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
 
 #include <sys/stat.h>
 #include <cstring>
@@ -21,21 +22,21 @@ void ProcessingFileEntriesLong::process(const char* dirPath, struct dirent *dirE
     }
 
     // Create new file item
-    FileItemPtr dirItemPtr(new FileItem(&st, dirEntry->d_name, fullPath.c_str(), funcSz));
+    auto* newItem = new FileItem(&st, dirEntry->d_name, fullPath.c_str(), funcSz);
 
     // Calculate blocks count
     totalBlockCount += st.st_blocks;
 
     // Insert to list
-    listItem.push_back(dirItemPtr);
+    listItem.push_back(newItem);
 }
 
 void ProcessingFileEntriesLong::process(struct stat *st, const char* filePath) {
     // Create new file item
-    FileItemPtr dirItemPtr(new FileItem(st, filePath, nullptr, funcSz));
+    auto* newItem = new FileItem(st, filePath, nullptr, funcSz);
 
     // Insert to list
-    listItem.push_back(dirItemPtr);
+    listItem.push_back(newItem);
 }
 
 void ProcessingFileEntriesLong::push() {
@@ -101,13 +102,13 @@ void ProcessingFileEntriesLong::push() {
 
 void ProcessingFileEntriesLong::sortItems() {
     const bool desc = flags & Parameters::descOrderFlag;
-    std::function<bool(const FileItemPtr& d1, const FileItemPtr& d2)> comparator;
+    std::function<bool(const FileItem* d1, const FileItem* d2)> comparator;
 
     if (desc) // Descending order
-        comparator = [](const FileItemPtr& d1, const FileItemPtr& d2)
+        comparator = [](const FileItem* d1, const FileItem* d2)
                 {return strcasecmp(d1->getFileName().c_str(), d2->getFileName().c_str())>0;};
     else
-        comparator = [](const FileItemPtr& d1, const FileItemPtr& d2)
+        comparator = [](const FileItem* d1, const FileItem* d2)
                 {return strcasecmp(d1->getFileName().c_str(), d2->getFileName().c_str())<=0;};
 
     listItem.sort(comparator);
@@ -170,8 +171,15 @@ ProcessingFileEntriesLong::ProcessingFileEntriesLong(uint8_t flags)
 
 void ProcessingFileEntriesLong::clear() {
     totalBlockCount = 0;
+    freeList();
     listItem.clear();
     memset(&identsInColumns, 0, sizeof(identsInColumns));
 }
 
-ProcessingFileEntriesLong::~ProcessingFileEntriesLong() = default;
+ProcessingFileEntriesLong::~ProcessingFileEntriesLong() {
+    freeList();
+}
+
+void ProcessingFileEntriesLong::freeList() {
+    std::for_each(listItem.begin(), listItem.end(), [](FileItem* p){delete p;});
+}

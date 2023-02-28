@@ -18,13 +18,11 @@ private:
         uint8_t date3 = 0;
     };
 
-    using FileItemPtr = std::shared_ptr<FileItem>;
-
     FuncSz funcSz = nullptr;
     static constexpr uint64_t defaultBlockSize = 512;
     static constexpr uint64_t defaultBlockSizeLsTool = 1024;
     uint64_t totalBlockCount = 0;
-    std::list<FileItemPtr> listItem;
+    std::list<FileItem*> listItem;
     IdentsInColumns identsInColumns;
 
     bool onlyFilepath = true;
@@ -50,6 +48,8 @@ public:
     void process(struct stat *st, const char* filePath) override;
     void push() override;
     void clear() override;
+
+    void freeList();
 
     ~ProcessingFileEntriesLong() override;
 };
