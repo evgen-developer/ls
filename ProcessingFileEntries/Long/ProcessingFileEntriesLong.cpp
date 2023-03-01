@@ -11,6 +11,9 @@
 
 void ProcessingFileEntriesLong::process(const char* dirPath, struct dirent *dirEntry) {
 
+    if (dirPath == nullptr || dirEntry == nullptr)
+        throw std::invalid_argument("pointer is null");
+
     const auto& fullPath = buildFullPath(dirPath, dirEntry->d_name);
     onlyFilepath = false;
 
@@ -32,6 +35,9 @@ void ProcessingFileEntriesLong::process(const char* dirPath, struct dirent *dirE
 }
 
 void ProcessingFileEntriesLong::process(struct stat *st, const char* filePath) {
+    if (st == nullptr || filePath == nullptr)
+        throw std::invalid_argument("pointer is null");
+
     // Create new file item
     auto* newItem = new FileItem(st, filePath, nullptr, funcSz);
 

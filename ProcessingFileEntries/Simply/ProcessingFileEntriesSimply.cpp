@@ -6,10 +6,16 @@
 
 
 void ProcessingFileEntriesSimply::process(const char* dirPath, struct dirent *dirEntry) {
+    if (dirPath == nullptr || dirEntry == nullptr)
+        throw std::invalid_argument("arg is null");
+
     listItem.emplace_back(dirEntry->d_name);
 }
 
 void ProcessingFileEntriesSimply::process(struct stat *st, const char *filePath) {
+    if (st == nullptr || filePath == nullptr)
+        throw std::invalid_argument("arg is null");
+
     listItem.emplace_back(filePath);
 }
 

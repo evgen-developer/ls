@@ -6,6 +6,10 @@
 #include "Parameters.h"
 
 Parameters::Input& Parameters::parse(int argc, char **argv) {
+
+    if (argc < 1 || argv == nullptr)
+        throw std::invalid_argument("invalid arg");
+
     opterr = 1;
 
     const char* short_options = "lhr";

@@ -145,6 +145,9 @@ const std::string &FileItem::getFileName() const {
 
 FileItem::FileItem(struct stat *st, const char *fileName, const char *fullPath, FuncSz funcSz) {
 
+    if (st == nullptr || fileName == nullptr || fullPath == nullptr || funcSz == nullptr)
+        throw std::invalid_argument("arg is null");
+
     if (S_ISLNK(st->st_mode)) {
         char buffLinkPath[PATH_MAX+1];
         const ssize_t sz = readlink(fullPath, buffLinkPath, sizeof(buffLinkPath) - sizeof(char));
