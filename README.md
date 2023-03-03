@@ -1,6 +1,6 @@
 # Overview
 
-A simplified analogue of the UNIX utility ls.
+A simplified analogue of the UNIX utility 'ls'.
 
 # Build
 
